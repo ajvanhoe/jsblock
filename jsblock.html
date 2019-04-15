@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+ 
+    <title>JS Blockchain demo</title>
+
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS -->
+    <style>
+
+    .navbar {
+      border-bottom: 1px solid #9b1521;
+    }
+
+    .bg-custom {
+        background-image: linear-gradient(#226e9d 0%, #4f7fb2 40%, #8197b7 100%);
+    }
+
+    .collapse-link {
+      text-decoration: none;
+      color: white;
+
+    }
+
+    .collapse-link:hover {
+      text-decoration: none;
+      /*color:green;*/
+      
+
+    }
+
+    .chain-data {
+      font-size: 12px;
+
+    }
+
+    #blocks {
+        padding:5px; 
+        width: 100%;
+        height:520px;
+        font-size: 12px;
+        overflow-y: scroll;
+
+        border: 2px solid black;
+    }
+
+  </style>
+
+
+</head>
+<body>
+<div class="bg-custom">
+  <header>
+      <nav class="navbar navbar-dark text-white bg-dark navbar-expand-sm mb-3">
+        <div class="container">
+          <a class="navbar-brand" onclick="reset()">JS Blockchain demo</a>
+
+
+              <div class="navbar-nav ml-auto">
+                   <span class="badge badge-primary" id="message"></span>
+              </div>
+        </div>
+      </nav>
+  </header>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-5">
+
+          <!-- Main options -->
+            <div class="card text-white bg-dark mb-3">
+              <div class="card-header">Options</div>
+              <div class="card-body">
+
+              <h6 class="card-title"><a class="collapse-link" data-toggle="collapse" href="#newBlockchain">Start a new blockchain <i class="fas fa-caret-down"></i></a></h6>
+              <div class="card-text collapse" id="newBlockchain">
+                  
+  <form class="px-3 py-2">
+    <div class="form-group">
+      <label>Add the genesis block:</label>
+      <input class="form-control" id="initialBlockText" type="text" placeholder="Input some inital text for the genesis block...">
+    </div>
+    <button type="button" onclick="newBlockchain()" class="btn btn-sm btn-primary btn-round">Create genesis block</button>
+  </form>
+  
+              </div>
+
+              <hr>
+
+              <h6 class="card-title"><a class="collapse-link" data-toggle="collapse" href="#minePending">Mine pending transactions <i class="fas fa-caret-down"></i></a></h6>
+              <div class="card-text collapse" id="minePending">
+
+  <form class="px-3 py-2">
+    <div class="form-group">
+        <label class="control-label">Select a miner</label>
+        <input class="form-control" id="miningRewardAddress" type="text" placeholder="The address will be rewarded with the mining fee...">
+    </div>
+    <button type="button" onclick="mine()" class="btn btn-sm btn-primary btn-round">Mine!</button>
+  </form>
+  
+              </div>
+
+              <hr>
+
+              </div>
+            </div>
+
+              <!-- Wallet -->
+
+            <div class="card text-white bg-dark mb-3">
+              <div class="card-header">Wallet</div>
+              <div class="card-body">
+
+            <h6 class="card-title"><a class="collapse-link" data-toggle="collapse" href="#newTransaction">Create a new transaction <i class="fas fa-caret-down"></i></a></h6>
+
+             <!-- <h6 class="card-title">Create a new transaction</h6> -->
+            
+            <div class="card-text collapse" id="newTransaction">
+              <p class="card-text">It will create a new transaction and add it to pending transactions.</p>
+              <div class="px-2 py-1">
+                <div class="form-group">
+                  <input class="form-control" id="from" type="text" placeholder="From...">
+                </div>
+
+                <div class="form-group">
+                  <input class="form-control" id="to" type="text" placeholder="...to address.">
+                </div>
+
+                <div class="form-group">
+                  <input type="number" min="0" id="amount">&nbsp;
+                  <label class="control-label"><i class="fas fa-coins"></i> amount</label>
+                </div>
+
+                <div class="form-group">
+                  <input type="text" id="label">&nbsp;
+                  <label class="control-label"><i class="fas fa-tag"></i> label</label>
+                </div>
+                
+                <button class="btn btn-primary" onclick="send()">Send...</button>
+
+              </div>
+
+            </div>
+              
+              <!-- <hr>
+
+                <h6 class="card-title"><a class="collapse-link" data-toggle="collapse" href="#newAddress">Create a new address <i class="fas fa-caret-down"></i></a></h6>
+                <div class="card-text collapse" id="newAddress">
+                  <label class="control-label">It will generate a new key pair using the eliptic library.</label>
+                  <button class="btn btn-primary btn-round">Create</button>
+                </div>
+              -->
+              <hr>
+                <!-- 
+                 <h6 class="card-title">Addreses:</h6>
+                <p class="card-text">Here you can see all the addresses in the wallet.</p> -->
+
+              </div>
+            </div>
+
+        
+      </div>     <!--  /.col-md-5 -->
+
+  <!-- Chain Data -->
+      <div class="col-md-7">
+
+            <div class="card text-white bg-dark mb-3">
+              <div class="card-header">Blockchain</div>
+              <div class="card-body">
+
+            <div class="row">
+
+              <div class="col-md-4">
+                <h5 class="card-title">Chain data:</h5>
+                <div class="chain-data">
+                  <p class="card-text">
+                    Mined blocks: <span id="blockCount"></span><br>
+                    Is chain valid:&nbsp;&nbsp;<span class="badge" id="isValid"></span><br>
+                   <!--  Difficulty:&nbsp;&nbsp;<input type="number" style="width:35px;" min="1" max="10" id="miningDifficulty"><br> -->
+                  </p>   
+                </div>
+              </div>
+
+              <div class="col-md-8">
+                  <h6 class="card-title">Pending transactions:</h6>
+                  <p class="card-text">Here you can see all the transactions that will be placed in the next block.</p>
+                  <hr>
+                  <div id="pending"></div>
+
+              </div>
+                
+            </div>
+
+            <div class="row"> 
+              <div class="col-md-12">
+                <hr>
+               <h6 class="card-title">Get balance of address </h6>
+                
+              
+                <form class="px-1 py-1 col-md-6">
+                  <div class="form-group">
+                    <input class="form-control" id="getBalance" type="text" placeholder="address...">
+                  </div>
+                  <button type="button" onclick="balanceOf()" class="btn btn-sm btn-primary btn-round">Get balance</button>
+                </form>
+                  
+                <p id="showBalance"></p>
+              </div>
+            </div>
+
+              </div>
+            </div>
+
+              <span class="text-center"><h6 class="text-white">Blocks</h6></span>
+                <div id="blocks"></div>
+
+        
+      </div>      
+    </div>
+
+  </div> <!-- /.container -->
+</div> <!-- /.bg-custom -->
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<!-- CryptoJS  -->
+<script type="text/javascript" src="bower_components/crypto-js/crypto-js.js"></script>
+
+
+<!-- Custom JS -->
+<script type="text/javascript" src="transaction.js"></script>
+<script type="text/javascript" src="block.js"></script>
+<script type="text/javascript" src="blockchain.js"></script>
+<script type="text/javascript" src="main.js"></script>
+
+  <script type="text/javascript">
+    var balance;
+    var blockchain = new Blockchain();
+    document.getElementById("message").innerHTML = "New blockchain created!";
+
+     refresh();
+  </script>
+
+
+</body>
+</html>
