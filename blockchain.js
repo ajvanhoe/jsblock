@@ -1,9 +1,9 @@
 class Blockchain {
 	constructor(initialBlockInput=null) {
 		this.chain = [this.createGenesisBlock(initialBlockInput)];
-		this.difficulty = 1;
+		this.difficulty = 3;
 		this.pendingTransactions = [];
-		this.miningReward = 25;
+		this.miningReward = 100;
 	}
 
 	createGenesisBlock(initialBlockInput=null) {

@@ -1,10 +1,31 @@
+var message = document.getElementById("message"),
+    blocks = document.getElementById("blocks"),
+    valid = document.getElementById("isValid"),
+    pending = document.getElementById("pending"),
+    miner = document.getElementById("miningRewardAddress"),
+    getBalance = document.getElementById("getBalance"),
+    showBalance = document.getElementById("showBalance"),
+    // miningDifficulty = document.getElementById("miningDifficulty"),
+    sender = document.getElementById("from"),
+    reciever = document.getElementById("to"),
+    label = document.getElementById("label"),
+    coins = document.getElementById("amount");
+
+
+
+function setMessage(alert, text) {
+  message.setAttribute("class", "badge badge-"+alert);
+  message.innerHTML = text;
+}
+
+
+
 
 function drawBlocks() {
 
-      var output = "";
-      // draw block
+      let output = "";
+      // draw blocks
       for (const block of blockchain.chain) {
-
           output+= "<div class=\"card text-white bg-dark mb-3\">";
            output+="<div class=\"card-header\">";
             output+="block height: "+blockchain.chain.indexOf(block)+"<br>";
@@ -25,20 +46,15 @@ function drawBlocks() {
           }
 
         output+="</div></div>";     
-               
-          //output+="";
-
-      }
-
-      document.getElementById("blocks").innerHTML = output;
+    }
+      blocks.innerHTML = output;
   }
 
 
 function drawBlock() {
- // sve za pojedinacni blok sa append 
- 
- var block = blockchain.getLatestBlock();
- var output="";
+ // adds a single block
+ let block = blockchain.getLatestBlock();
+ let output="";
 
           output+= "<div class=\"card text-white bg-dark mb-3\">";
            output+="<div class=\"card-header\">";
@@ -62,14 +78,14 @@ function drawBlock() {
         output+="</div></div>";     
 
 // with .insertAdjacentHTML, preserves event listeners
-document.getElementById('blocks').insertAdjacentHTML('afterbegin', output);
+blocks.insertAdjacentHTML('afterbegin', output);
 
 }
 
 
 function showPendingTranactions() {
 
-    var output ="<p>";
+    let output ="<p>";
     for (const transaction of blockchain.pendingTransactions) {
         output+= transaction.fromAddress + " <i class=\"fas fa-long-arrow-alt-right\"></i> " + transaction.toAddress + " <i class=\"fab fa-bitcoin\"></i> " + transaction.amount + "<br>";
         output+= "label: " + transaction.label + "<br>";
@@ -77,65 +93,45 @@ function showPendingTranactions() {
     }
 
     output+="</p>";
-    document.getElementById("pending").innerHTML = output;
+    pending.innerHTML = output;
 }
-
-
-
-
-
-
 
 
 
    function mine() {
 
-      document.getElementById("message").setAttribute("class", "badge badge-warning");
-      document.getElementById("message").innerHTML = "Mining!";
+      setMessage('warning', 'Mining!');
 
       // set difficulty
-      //let difficulty = document.getElementById("miningDifficulty").value;
-      //blockchain.setDifficulty(difficulty);
-      //console.log('Difficulty set to: '+difficulty);
+      // let difficulty = miningDifficulty.value;
+      // blockchain.setDifficulty(difficulty);
+      // console.log('Difficulty set to: '+difficulty);
 
-      let address =  document.getElementById("miningRewardAddress").value;
-      address ? blockchain.mineBlock(address) : blockchain.mineBlock('unknown address');
-
-     //localStorage.setItem("chain", JSON.stringify(blockchain, null, 4));
-
-      document.getElementById("message").setAttribute("class", "badge badge-success");
-      document.getElementById("message").innerHTML = "New block created!";
-
-      if(blockchain.isChainValid()) {
-          document.getElementById("isValid").setAttribute("class", "badge badge-success");
-          document.getElementById("isValid").innerHTML = 'true';
-        } else {
-          document.getElementById("isValid").setAttribute("class", "badge badge-danger");
-          document.getElementById("isValid").innerHTML = 'false';
+      let address =  miner.value;
+      if(!address) {
+        setMessage('warning', 'Unknown address!');
+      } else {
+        blockchain.mineBlock(address);
+        setMessage('success', 'New block created!');
+        miner.innerHTML = '';
+        refresh();
       }
-
-      
-      refresh();
+          
+     
    }
 
 
-
-
-
   function send() {
-      let from = document.getElementById("from").value;
-      let to = document.getElementById("to").value;
-      let amount = document.getElementById("amount").value;
+      let from = sender.value,
+          to = reciever.value,
+          amount = coins.value,
+          info = label.value;
 
-      let label = document.getElementById("label").value;
-
-     if(blockchain.createTransaction(new Transaction(from, to, amount, label))) {
-        document.getElementById("message").setAttribute("class", "badge badge-success");
-        document.getElementById("message").innerHTML = "New transaction created!";
+     if(blockchain.createTransaction(new Transaction(from, to, amount, info))) {
+        setMessage('success', 'New transaction created!');
         showPendingTranactions();
      } else {
-       document.getElementById("message").setAttribute("class", "badge badge-danger");
-       document.getElementById("message").innerHTML = "Transaction rejected!";
+        setMessage('danger', 'Transaction rejected!');
      }
    }
 
@@ -152,45 +148,26 @@ function showPendingTranactions() {
 
         //localStorage.setItem("chain", JSON.stringify(chain, null, 4));
 
-
-
-        if(chain.isChainValid()) {
-          document.getElementById("isValid").setAttribute("class", "badge badge-success");
-          document.getElementById("isValid").innerHTML = 'true';
-        } else {
-          document.getElementById("isValid").setAttribute("class", "badge badge-danger");
-          document.getElementById("isValid").innerHTML = 'false';
-        }
-
-
-        // replace old blockchain with new
+      isValid();
+      // replace old blockchain with new
       blockchain = chain;
-
-      document.getElementById("chainData").innerHTML = JSON.stringify(chain, null, 4);
-      document.getElementById("message").innerHTML = "New blockchain created!";
-
+      setMessage('primary', 'New blockchain created!');
       drawBlocks();
     }
 
 
 
     function balanceOf() {
-      let address = document.getElementById("getBalance").value.toString();
+      let address = getBalance.value.toString();
       let balance = blockchain.getBalanceOfAddress(address);
      
-      document.getElementById("showBalance").innerHTML = "Balance of " + address + ": " + balance +" <i class=\"fab fa-bitcoin\"></i>";
+      showBalance.innerHTML = "Balance of " + address + ": " + balance +" <i class=\"fab fa-bitcoin\"></i>";
       
     }
 
 
     function isValid() {
-        if(blockchain.isChainValid()) {
-          document.getElementById("isValid").setAttribute("class", "badge badge-success");
-          document.getElementById("isValid").innerHTML = 'true';
-        } else {
-          document.getElementById("isValid").setAttribute("class", "badge badge-danger");
-          document.getElementById("isValid").innerHTML = 'false';
-        }
+      blockchain.isChainValid() ? setIsValid('success', 'true') : setIsValid('danger', 'false');
     }
 
 
@@ -198,11 +175,15 @@ function showPendingTranactions() {
 
       let newValue = document.getElementById("difficulty").value;
       blockchain.setDifficulty(newValue);
-
-      document.getElementById("isValid").setAttribute("class", "badge badge-warning");
-      document.getElementById("message").innerHTML = "Difficulty set to "+newValue +"!";
+     
+      setMessage('warning', 'Difficulty set to '+newValue +'!');
+      
     }
 
+    function setIsValid(alert, text) {
+        valid.setAttribute("class", "badge badge-"+alert);
+        valid.innerHTML = text;
+    }
 
 
     function total() {
@@ -215,5 +196,6 @@ function showPendingTranactions() {
       //drawBlocks();
       drawBlock();
       showPendingTranactions();
+      isValid();
       total();
     }
