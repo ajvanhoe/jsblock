@@ -1,3 +1,8 @@
+/* element by id vars */
+var element = function (id) {
+  return document.getElementById(id);
+}
+
 var message = document.getElementById("message"),
     blocks = document.getElementById("blocks"),
     valid = document.getElementById("isValid"),
@@ -5,17 +10,22 @@ var message = document.getElementById("message"),
     miner = document.getElementById("miningRewardAddress"),
     getBalance = document.getElementById("getBalance"),
     showBalance = document.getElementById("showBalance"),
-    // miningDifficulty = document.getElementById("miningDifficulty"),
     sender = document.getElementById("from"),
     reciever = document.getElementById("to"),
     label = document.getElementById("label"),
     coins = document.getElementById("amount");
 
+/* Difficulty */
+
+var miningDifficulty = element("miningDifficulty");
+    setDifficulty = element("setDifficulty");
 
 
 function setMessage(alert, text) {
   message.setAttribute("class", "badge badge-"+alert);
   message.innerHTML = text;
+
+  //console.log(message, 'from setMessage');
 }
 
 
@@ -163,7 +173,7 @@ function showPendingTranactions() {
      
       showBalance.innerHTML = "Balance of " + address + ": " + balance +" <i class=\"fab fa-bitcoin\"></i>";
       
-    }
+    } 
 
 
     function isValid() {
@@ -171,14 +181,18 @@ function showPendingTranactions() {
     }
 
 
-    function changeDifficulty() {
+    setDifficulty.addEventListener('click', function () {
+      let newValue = miningDifficulty.value;
+      // blockchain.setDifficulty(newValue);
+      blockchain.difficulty = parseInt(newValue);
 
-      let newValue = document.getElementById("difficulty").value;
-      blockchain.setDifficulty(newValue);
-     
-      setMessage('warning', 'Difficulty set to '+newValue +'!');
-      
-    }
+      const msg = `Difficulty set to ${newValue} !`;
+      setMessage('warning', msg);
+      console.log(blockchain.difficulty);
+      console.log(typeof blockchain.difficulty);
+    })
+
+
 
     function setIsValid(alert, text) {
         valid.setAttribute("class", "badge badge-"+alert);

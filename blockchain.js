@@ -87,7 +87,7 @@ class Blockchain {
 
 
 	setDifficulty(newValue) {
-		this.difficulty = newValue;
+		this.difficulty = parseInt(newValue);
 	}
 
 
