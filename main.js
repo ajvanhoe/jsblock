@@ -3,24 +3,26 @@ var element = function (id) {
   return document.getElementById(id);
 }
 
-var message = document.getElementById("message"),
-    blocks = document.getElementById("blocks"),
-    valid = document.getElementById("isValid"),
-    pending = document.getElementById("pending"),
-    miner = document.getElementById("miningRewardAddress"),
-    getBalance = document.getElementById("getBalance"),
-    showBalance = document.getElementById("showBalance"),
-    sender = document.getElementById("from"),
-    reciever = document.getElementById("to"),
-    label = document.getElementById("label"),
-    coins = document.getElementById("amount");
+var message = element("message"),
+    blocks = element("blocks"),
+    valid = element("isValid"),
+    pending = element("pending"),
+    miner = element("miningRewardAddress"),
+    getBalance = element("getBalance"),
+    showBalance = element("showBalance"),
+    sender = element("from"),
+    reciever = element("to"),
+    label = element("label"),
+    coins = element("amount");
+  
 
-/* Difficulty */
+/* difficulty vars */
 
 var miningDifficulty = element("miningDifficulty");
     setDifficulty = element("setDifficulty");
 
 
+/* messages */
 function setMessage(alert, text) {
   message.setAttribute("class", "badge badge-"+alert);
   message.innerHTML = text;
@@ -29,33 +31,31 @@ function setMessage(alert, text) {
 }
 
 
-
+/* visualizing blocks */
 
 function drawBlocks() {
-
+  
       let output = "";
       // draw blocks
       for (const block of blockchain.chain) {
-          output+= "<div class=\"card text-white bg-dark mb-3\">";
-           output+="<div class=\"card-header\">";
-            output+="block height: "+blockchain.chain.indexOf(block)+"<br>";
-            // output+="timestamp: "+block.timestamp+"<br>";
-            output+="<strong>block hash</strong>:  "+block.hash+"<br>";
-            output+="<small>previous hash</small>:  "+block.previousHash+"<br>";
-            output+="nonce: "+block.nonce;
-            output+="</div>";
-          output+="<div class=\"card-body\"><h5 class=\"card-title\">Transactions:</h5>";
+          output+= `<div class=\"card text-white bg-dark mb-3\">`;
+           output+=`<div class=\"card-header\">`;
+           output+=`block height: ${blockchain.chain.indexOf(block)}<br>`;
+           // output+="timestamp: "+block.timestamp+"<br>";
+           output+=`<strong>block hash</strong>:  ${block.hash}<br>`;
+           output+=`<small>previous hash</small>: ${block.previousHash}<br>`;
+           output+=`nonce: ${block.nonce} </div>`;
+          output+=`<div class=\"card-body\"><h5 class=\"card-title\">Transactions:</h5>`;
           
           for(const transaction of block.transactions) {
 
-            output+= "From: " + transaction.fromAddress + "<br>";
-            output+= "To: " + transaction.toAddress + "<br>";
-            output+= "Amount: " + transaction.amount + "<br>";
-            output+= "Label: " + transaction.label + "<br>";
-            output+= "<hr>";
+            output+= `From: ${transaction.fromAddress}<br>`;
+            output+= `To: ${transaction.toAddress} <br>`;
+            output+= `Amount: ${transaction.amount} <br>`;
+            output+= `Label: ${transaction.label} <br><hr>`;
           }
 
-        output+="</div></div>";     
+        output+=`</div></div>`;     
     }
       blocks.innerHTML = output;
   }
@@ -66,26 +66,25 @@ function drawBlock() {
  let block = blockchain.getLatestBlock();
  let output="";
 
-          output+= "<div class=\"card text-white bg-dark mb-3\">";
-           output+="<div class=\"card-header\">";
-            output+="block height: "+blockchain.chain.indexOf(block)+"<br>";
-            // output+="timestamp: "+block.timestamp+"<br>";
-            output+="<strong>block hash</strong>:  "+block.hash+"<br>";
-            output+="<small>previous hash</small>:  "+block.previousHash+"<br>";
-            output+="nonce: "+block.nonce;
-            output+="</div>";
-          output+="<div class=\"card-body\"><h5 class=\"card-title\">Transactions:</h5>";
+          output+= `<div class=\"card text-white bg-dark mb-3\">`;
+          output+= `<div class=\"card-header\">`;
+          output+= `block height: ${blockchain.chain.indexOf(block)}<br>`;
+          // output+="timestamp: "+block.timestamp+"<br>";
+          output+=`<strong>block hash</strong>: ${block.hash}<br>`;
+          output+=`<small>previous hash</small>: ${block.previousHash}<br>`;
+          output+=`nonce: ${block.nonce} </div>`;
+          output+=`<div class=\"card-body\"><h5 class=\"card-title\">Transactions:</h5>`;
           
           for(const transaction of block.transactions) {
 
-            output+= "From: " + transaction.fromAddress + "<br>";
-            output+= "To: " + transaction.toAddress + "<br>";
-            output+= "Amount: " + transaction.amount + "<br>";
-            output+= "Label: " + transaction.label + "<br>";
-            output+= "<hr>";
+            output+= `From: ${transaction.fromAddress} <br>`;
+            output+= `To: ${transaction.toAddress} <br>`;
+            output+= `Amount: ${transaction.amount} <br>`;
+            output+= `Label: ${transaction.label} <br><hr>`;
+            
           }
 
-        output+="</div></div>";     
+        output+=`</div></div>`;     
 
 // with .insertAdjacentHTML, preserves event listeners
 blocks.insertAdjacentHTML('afterbegin', output);
@@ -95,15 +94,13 @@ blocks.insertAdjacentHTML('afterbegin', output);
 
 function showPendingTranactions() {
 
-    let output ="<p>";
-    for (const transaction of blockchain.pendingTransactions) {
-        output+= transaction.fromAddress + " <i class=\"fas fa-long-arrow-alt-right\"></i> " + transaction.toAddress + " <i class=\"fab fa-bitcoin\"></i> " + transaction.amount + "<br>";
-        output+= "label: " + transaction.label + "<br>";
-        output+= "<hr>";
-    }
+  let output = `<p>`;
+  for (const transaction of blockchain.pendingTransactions) {
+    output += `${transaction.fromAddress} <i class=\"fas fa-long-arrow-alt-right\"></i> ${transaction.toAddress} <i class=\"fab fa-bitcoin\"></i> ${transaction.amount}<br>label: ${transaction.label} <br><hr>`;
+  }
+  output += `</p>`;
 
-    output+="</p>";
-    pending.innerHTML = output;
+  pending.innerHTML = output;
 }
 
 
@@ -111,11 +108,6 @@ function showPendingTranactions() {
    function mine() {
 
       setMessage('warning', 'Mining!');
-
-      // set difficulty
-      // let difficulty = miningDifficulty.value;
-      // blockchain.setDifficulty(difficulty);
-      // console.log('Difficulty set to: '+difficulty);
 
       let address =  miner.value;
       if(!address) {
@@ -171,7 +163,7 @@ function showPendingTranactions() {
       let address = getBalance.value.toString();
       let balance = blockchain.getBalanceOfAddress(address);
      
-      showBalance.innerHTML = "Balance of " + address + ": " + balance +" <i class=\"fab fa-bitcoin\"></i>";
+      showBalance.innerHTML = `Balance of ${address}: ${balance}<i class=\"fab fa-bitcoin\"></i>`;
       
     } 
 
@@ -188,8 +180,8 @@ function showPendingTranactions() {
 
       const msg = `Difficulty set to ${newValue} !`;
       setMessage('warning', msg);
-      console.log(blockchain.difficulty);
-      console.log(typeof blockchain.difficulty);
+      // console.log(blockchain.difficulty);
+      // console.log(typeof blockchain.difficulty);
     })
 
 
